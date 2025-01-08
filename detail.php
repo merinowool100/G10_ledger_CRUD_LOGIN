@@ -1,15 +1,8 @@
 <?php
-
-/**
- * [ここでやりたいこと]
- * 1. クエリパラメータの確認 = GETで取得している内容を確認する
- * 2. select.phpのPHP<?php ?>の中身をコピー、貼り付け
- * 3. SQL部分にwhereを追加
- * 4. データ取得の箇所を修正。
- */
-
+session_start();
 $id = $_GET["id"];
-
+require_once('funcs.php');
+loginCheck();
 //0. 関数読み込み---------------------------------------
 require_once('funcs.php');
 
@@ -32,14 +25,7 @@ if ($status === false) {
 }
 
 ?>
-<!--
-２．HTML
-以下にindex.phpのHTMLをまるっと貼り付ける！
-(入力項目は「登録/更新」はほぼ同じになるから)
-※form要素 input type="hidden" name="id" を１項目追加（非表示項目）
-※form要素 action="update.php"に変更
-※input要素 value="ここに変数埋め込み"
--->
+
 
 <!DOCTYPE html>
 <html lang="ja">

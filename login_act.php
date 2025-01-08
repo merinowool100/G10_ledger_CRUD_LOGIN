@@ -26,10 +26,11 @@ if ($status === false) {
 $val = $stmt->fetch();
 
 //
-if($val['id'] != '' && password_verify($lpw, $val['lpw'])){
+if($val && password_verify($lpw, $val['lpw'])){
+    session_regenerate_id(true);
     $_SESSION['chk_ssid'] = session_id();
-    $_SESSION['admin'] = $val['admin'];
-    redirect('index.php')
+    $_SESSION['lid'] = $val['lid'];
+    redirect('index.php');
 }else{
     redirect('login.php');
 }

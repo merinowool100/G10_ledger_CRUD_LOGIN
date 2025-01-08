@@ -1,13 +1,22 @@
 <?php
+//SESSION開始 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+session_start();
 
-//関数読み込み---------------------------------------
+//関数読み込み >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 require_once('funcs.php');
 
-//DB接続---------------------------------------------
+//ログインチェック >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+loginCheck();
+
+//ユーザーのlidを取得 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+$lid = $_SESSION['lid'];
+
+//DB接続 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 $pdo = db_conn();
 
-//SQLからデータ取得----------------------------------
-$stmt = $pdo->prepare('SELECT * FROM ledger ORDER BY date ASC;');
+//SQLからデータ取得 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+$stmt = $pdo->prepare('SELECT * FROM ledger WHERE lid=:lid ORDER BY date ASC;');
+$stmt->bindValue(':lid', $lid, PDO::PARAM_STR);
 $status = $stmt->execute();
 
 //データ表示-----------------------------------------
@@ -94,10 +103,11 @@ $view .= '</tbody></table></div>'
         tr {
             border: 1px dotted gray;
             padding: 8px;
-            
+
         }
 
-        td,th {
+        td,
+        th {
             padding: 5px;
         }
     </style>
@@ -110,6 +120,9 @@ $view .= '</tbody></table></div>'
     </div>
     <div style="text-align:center;">
         <a href="write.php"><button style='border-radius:5px; border:0px; background-color: lightgray; margin:10px;'>+</button></a>
+    </div>
+    <div style="text-align:center;">
+        <a href="logout.php" style="text-decoration:none;">>>> Logout</a>
     </div>
 </body>
 

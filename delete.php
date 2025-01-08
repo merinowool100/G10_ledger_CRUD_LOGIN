@@ -1,18 +1,13 @@
 <?php
-
+session_start();
 $id = $_GET["id"];
-
-//関数読み込み---------------------------------------
 require_once('funcs.php');
-
-//DB接続---------------------------------------------
+loginCheck();
 $pdo = db_conn();
 
 //３．データ登録SQL作成
 $update = $pdo->prepare("DELETE FROM ledger WHERE id=:id;");
-
 $update->bindValue(':id', $id, PDO::PARAM_INT);
-
 $status = $update = $update->execute();
 
 

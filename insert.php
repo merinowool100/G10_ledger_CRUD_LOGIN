@@ -1,13 +1,16 @@
 <?php
+//SESSION開始 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+session_start();
 
 //0. 関数読み込み---------------------------------------
 require_once('funcs.php');
 
-//1. POSTデータ取得-------------------------------------
+//1. POST/SESSIONデータ取得-------------------------------------
 $date = $_POST["date"];
 $item = $_POST["item"];
 $type = $_POST["type"];
 $amount = $_POST["amount"];
+$lid = $_SESSION["lid"];
 
 //2. DB接続---------------------------------------------
 $pdo = db_conn();
@@ -16,10 +19,10 @@ $pdo = db_conn();
 $stmt = $pdo->prepare(
     'INSERT INTO
         ledger(
-            date, item, type, amount
+            date, item, type, amount, lid
         )
     VALUES (
-            :date, :item, :type, :amount
+            :date, :item, :type, :amount, :lid
         );'
 );
 
@@ -29,6 +32,7 @@ $stmt->bindValue(':date', $date, PDO::PARAM_STR);
 $stmt->bindValue(':item', $item, PDO::PARAM_STR);
 $stmt->bindValue(':type', $type, PDO::PARAM_STR);
 $stmt->bindValue(':amount', $amount, PDO::PARAM_INT);
+$stmt->bindValue(':lid', $lid, PDO::PARAM_STR);
 $status = $stmt->execute(); //実行
 
 //４．データ登録処理後-----------------------------------
