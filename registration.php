@@ -10,7 +10,7 @@
 <body>
 <div style="display:flex; justify-content:center; flex-direction: column; text-align:center;">    
 <div style="width:500px; margin:0 auto;">
-        <div style="margin:20px; font-weight:bold;">Registration</div>
+        <div style="margin:20px; font-weight:bold; background-color:lightgray;">Registration</div>
         <form name="form2" action="registration_act.php" method="POST">
             <div>
                 <table style="margin:0 auto;">
