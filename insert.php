@@ -20,32 +20,46 @@ $pdo = db_conn();
 
 // POSTされたデータの取得
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $id = $_POST['id'];      // 更新するレコードのID
     $amount = $_POST['amount'];  // POSTで送られた金額
     $date = $_POST['date'];      // POSTで送られた日付
     $item = $_POST['item'];      // POSTで送られた項目名
 
-    // ① レコードが存在するか確認
-    $stmt = $pdo->prepare('SELECT * FROM ledger WHERE lid=:lid AND id=:id');
+    // ① DBにレコードがあるか確認
+    $stmt = $pdo->prepare('SELECT 1 FROM ledger WHERE lid=:lid AND YEAR(date)=:year AND MONTH(date)=:month LIMIT 1');
     $stmt->bindValue(':lid', $lid, PDO::PARAM_STR);
-    $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+    $stmt->bindValue(':year', $currentYear, PDO::PARAM_INT);
+    $stmt->bindValue(':month', $currentMonth, PDO::PARAM_INT);
     $stmt->execute();
-    $record = $stmt->fetch(PDO::FETCH_ASSOC);
+    $recordExists = $stmt->fetchColumn();
 
-    // ② レコードが存在する場合、更新処理
-    if ($record) {
-        // レコードを更新
-        $stmt = $pdo->prepare('UPDATE ledger SET date=:date, amount=:amount, item=:item WHERE id=:id');
+    // ② レコードがない場合、新規レコードを追加
+    if (!$recordExists) {
+        // 新しいレコードを追加 (total_amount = amount)
+        $stmt = $pdo->prepare('INSERT INTO ledger (lid, date, amount, item, total_amount) VALUES (:lid, :date, :amount, :item, :total_amount)');
+        $stmt->bindValue(':lid', $lid, PDO::PARAM_STR);
         $stmt->bindValue(':date', $date, PDO::PARAM_STR);
         $stmt->bindValue(':amount', $amount, PDO::PARAM_INT);
         $stmt->bindValue(':item', $item, PDO::PARAM_STR);
-        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+        $stmt->bindValue(':total_amount', $amount, PDO::PARAM_INT);  // total_amountはamountと同じ
+        if (!$stmt->execute()) {
+            $error = $stmt->errorInfo();
+            exit("SQL Error: " . print_r($error, true));
+        }
+    } else {
+        // ③ レコードがすでにある場合、新規レコードを追加 (total_amountは初期値0)
+        // 新規レコードを追加 (total_amountは0)
+        $stmt = $pdo->prepare('INSERT INTO ledger (lid, date, amount, item, total_amount) VALUES (:lid, :date, :amount, :item, :total_amount)');
+        $stmt->bindValue(':lid', $lid, PDO::PARAM_STR);
+        $stmt->bindValue(':date', $date, PDO::PARAM_STR);
+        $stmt->bindValue(':amount', $amount, PDO::PARAM_INT);
+        $stmt->bindValue(':item', $item, PDO::PARAM_STR);
+        $stmt->bindValue(':total_amount', 0, PDO::PARAM_INT);  // 新規レコードはtotal_amountを0で保存
         if (!$stmt->execute()) {
             $error = $stmt->errorInfo();
             exit("SQL Error: " . print_r($error, true));
         }
 
-        // ③ 更新後、すべてのデータを取得してtotal_amountを再計算
+        // 新規レコードが追加された後、全レコードを取得してtotal_amountを再計算
         $stmt = $pdo->prepare('SELECT * FROM ledger WHERE lid=:lid ORDER BY date ASC');
         $stmt->bindValue(':lid', $lid, PDO::PARAM_STR);
         $stmt->execute();
@@ -66,14 +80,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 exit("SQL Error: " . print_r($error, true));
             }
         }
-
-    } else {
-        // レコードが存在しない場合
-        exit("Error: レコードが見つかりません。");
     }
 
-    // 更新後にリダイレクト
+    // 登録後にリダイレクトなど
     header('Location: index.php?year=' . $currentYear . '&month=' . $currentMonth);
     exit;
 }
+
 ?>
