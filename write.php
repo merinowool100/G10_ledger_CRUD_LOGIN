@@ -28,12 +28,6 @@
                         <td><input type="text" name="item" style="width:280px;"></td>
                     </tr>
                     <tr>
-                        <td>Type</td>
-                        <td>
-                            <input type="radio" name="type" value="expense" required>Expense
-                            <input type="radio" name="type" value="income" required>Income
-                    </tr>
-                    <tr>
                         <td>Amount</td>
                         <td><input type="number" name="amount" style="width:280px;"></td>
                     </tr>

@@ -3,8 +3,6 @@ session_start();
 $id = $_GET["id"];
 require_once('funcs.php');
 loginCheck();
-//0. 関数読み込み---------------------------------------
-require_once('funcs.php');
 
 //1. DB接続---------------------------------------------
 $pdo = db_conn();
@@ -33,7 +31,6 @@ if ($status === false) {
 <head>
     <meta charset="UTF-8">
     <title>データ登録</title>
-    <link href="css/bootstrap.min.css" rel="stylesheet">
     <style>
         div {
             padding: 10px;
@@ -56,12 +53,6 @@ if ($status === false) {
                     <tr>
                         <td>Item</td>
                         <td><input type="text" name="item" value="<?= $result['item'] ?>" style="width:280px;"></td>
-                    </tr>
-                    <tr>
-                        <td>Type</td>
-                        <td>
-                            <input type="radio" name="type" value="expense" <?= ($result['type'] == 'expense') ? 'checked' : '' ?> required>Expense
-                            <input type="radio" name="type" value="income" <?= ($result['type'] == 'income') ? 'checked' : '' ?> required>Income
                     </tr>
                     <tr>
                         <td>Amount</td>
